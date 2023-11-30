@@ -1,6 +1,4 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-# import secrets
-# import string
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):

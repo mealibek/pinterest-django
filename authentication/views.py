@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
 import binascii
+from authentication.decorators import authentication_required
 
 User = get_user_model()
 
@@ -62,3 +63,24 @@ class CheckEmailAPIView(APIView):
         if User.objects.filter(email=email).exists():
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class AuthInfoAPIView(APIView):
+    @authentication_required
+    def post(self, request):
+        jwt_user = getattr(request, 'jwt_user', None)
+
+        if jwt_user is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            info = User.objects.values(
+                'email', 'first_name', 'last_name', 'id', 'profile_image').get(id=jwt_user.id)
+
+            print(info)
+
+            return Response(info, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({
+                'details': "User not found"
+            }, status=status.HTTP_404_NOT_FOUND)
