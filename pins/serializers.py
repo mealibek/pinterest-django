@@ -15,3 +15,9 @@ class PinListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pin
         fields = '__all__'
+
+
+class PinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pin
+        fields = ['title', 'description', 'image', 'origin', 'path']

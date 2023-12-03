@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
+import os
+from google.cloud import storage
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -233,3 +236,28 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+
+# Set the Google Cloud Storage settings
+GS_BUCKET_NAME = 'pinterest-clone'
+GS_PROJECT_ID = 'dreaps-404220'
+GS_LOCATION = 'Kyrgyzstan, Bishkek'
+
+# Google Cloud Storage URL
+MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+
+# Set the path to the credentials.json file in the root directory
+credentials_path = os.path.join(os.path.dirname(
+    os.path.abspath(__file__)), '..', 'credentials.json')
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+
+# Configure the Google Cloud Storage client
+client = storage.Client(project=GS_PROJECT_ID)
+
+# Check if credentials are set up correctly
+try:
+    buckets = list(client.list_buckets())
+    print("Credentials are set up correctly.")
+except Exception as e:
+    print(f"Error: {e}")
